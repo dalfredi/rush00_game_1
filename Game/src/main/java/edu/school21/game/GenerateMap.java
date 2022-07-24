@@ -57,8 +57,8 @@ public class GenerateMap {
     public boolean runPerson(Point oldPerson, Point delta) {
         int i = 0;
 
-        if (oldPerson.x + delta.x <= 0 || oldPerson.x + delta.x >= width
-                || oldPerson.y + delta.y <= 0 || oldPerson.y + delta.y >= height) {
+        if (oldPerson.x + delta.x < 0 || oldPerson.x + delta.x == width
+                || oldPerson.y + delta.y < 0 || oldPerson.y + delta.y == height) {
             return false;
         }
         if (map[(int)(oldPerson.getX() + delta.getX())]
@@ -66,17 +66,17 @@ public class GenerateMap {
             return false;
         }
 
-        if (oldPerson == this.player) {
-            player.setLocation(oldPerson.getX() + delta.getX(), oldPerson.getY() + delta.getY());
+        if (oldPerson.x == player.x && oldPerson.y == player.y) {
             map[(int)(oldPerson.getX())][(int)(oldPerson.getY())] = 0;
             map[(int)(oldPerson.getX() + delta.getX())][(int)(oldPerson.getY() + delta.getY())] = 2;
+            player.setLocation(oldPerson.getX() + delta.getX(), oldPerson.getY() + delta.getY());
         } else {
             while (enemies[i] != oldPerson) {
                 i++;
             }
-            enemies[i].setLocation(oldPerson.getX() + delta.getX(), oldPerson.getY() + delta.getY());
             map[(int)(oldPerson.getX())][(int)(oldPerson.getY())] = 0;
             map[(int)(oldPerson.getX() + delta.getX())][(int)(oldPerson.getY() + delta.getY())] = 4;
+            enemies[i].setLocation(oldPerson.getX() + delta.getX(), oldPerson.getY() + delta.getY());
         }
         return true;
     }

@@ -22,7 +22,7 @@ public class Main {
 	private static Goal goal;
 
 	private static int[][] map;
-	private static List<Enemy> listEnemy = new ArrayList<>();
+	private static List<Enemy> enemyList = new ArrayList<>();
 
 	private static MyProperties properties;
 
@@ -57,7 +57,8 @@ public class Main {
 		while (true) {
 			String input = scanner.nextLine();
 			Point delta = new Point(0, 0);
-			switch (input) {
+			System.out.println(input.toUpperCase());
+			switch (input.toUpperCase()) {
 				case "W":
 					delta = new Point(0, -1);
 					break ;
@@ -70,16 +71,25 @@ public class Main {
 				case "D":
 					delta = new Point(1, 0);
 					break ;
+				case "9":
+					System.exit(1);
+					break ;
 			}
 			paintMap();
+			if (!arguments.getProfile().equals("dev"))
+				System.out.print("\033[H\033[2J");
 			if (!generator.runPerson(player.getCurPosition(), delta)) {
 				continue;
+			}
+			for (Enemy enemy : enemyList) {
+				if ((delta = ChaseLogic.getNextMove(map, WALL, ENEMY,
+						enemy.getCurPosition(), player.getCurPosition())) != null)
+					generator.runPerson(enemy.getCurPosition(), delta);
 			}
 		}
 	}
 
 	private static void paintMap() {
-		System.out.print("\033[H\033[2J");
 		ColoredPrinter cp = new ColoredPrinter.Builder(1, false)
 				.foreground(Ansi.FColor.NONE).background(Ansi.BColor.NONE)
 				.build();
@@ -92,9 +102,9 @@ public class Main {
 										properties.getProperty("empty.color")));
 						break;
 					case ENEMY:
-						cp.print(listEnemy.get(0).getSymbolPerson(),
+						cp.print(enemyList.get(0).getSymbolPerson(),
 								Ansi.Attribute.NONE,
-								Ansi.FColor.NONE, Ansi.BColor.valueOf(listEnemy.get(0).getColorPerson()));
+								Ansi.FColor.NONE, Ansi.BColor.valueOf(enemyList.get(0).getColorPerson()));
 						break;
 					case PLAYER:
 						cp.print(player.getSymbolPerson(),
@@ -115,6 +125,7 @@ public class Main {
 			}
 			System.out.println();
 		}
+
 	}
 
 
@@ -127,7 +138,6 @@ public class Main {
 
 		generator.generateMap();
 
-		System.out.println("_____");
 		map = generator.getMap();
 
 		Point playerPoint = generator.getPlayer();
@@ -141,13 +151,12 @@ public class Main {
 		goal = new Goal(goalPoint, symbol.charAt(0), properties.getProperty("goal.color"));
 
 		Point[] enemies = generator.getEnemies();
-		System.out.println("in Main=" + enemies);
 		symbol = properties.getProperty("enemy.char");
 		checkSymbol(symbol, "enemy.char");
 		for (int i = 0; i < arguments.getEnemiesCount(); i++) {
 			symbol = properties.getProperty("enemy.char");
 			Enemy newEnemy = new Enemy(enemies[i], symbol.charAt(0), properties.getProperty("enemy.color"));
-			listEnemy.add(newEnemy);
+			enemyList.add(newEnemy);
 		}
 
 		String empty = properties.getProperty("empty.char");
