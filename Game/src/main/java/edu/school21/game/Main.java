@@ -53,6 +53,7 @@ public class Main {
 
 	private static void start() {
 		Scanner scanner = new Scanner(System.in);
+		paintMap();
 		while (true) {
 			String input = scanner.nextLine();
 			Point delta = new Point(0, 0);
@@ -70,14 +71,15 @@ public class Main {
 					delta = new Point(1, 0);
 					break ;
 			}
+			paintMap();
 			if (!generator.runPerson(player.getCurPosition(), delta)) {
 				continue;
 			}
-			paintMap();
 		}
 	}
 
 	private static void paintMap() {
+		System.out.print("\033[H\033[2J");
 		ColoredPrinter cp = new ColoredPrinter.Builder(1, false)
 				.foreground(Ansi.FColor.NONE).background(Ansi.BColor.NONE)
 				.build();

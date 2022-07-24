@@ -1,6 +1,7 @@
 package edu.school21.game;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class MyProperties {
@@ -17,8 +18,13 @@ public class MyProperties {
 		this.properties = new Properties();
 
 		try {
-			this.properties.load(getClass().getResourceAsStream("application-dev.properties"));
-		} catch (IOException e) {
+			InputStream inputStream = getClass().getResourceAsStream(this.pathFileProperties);
+			if (inputStream == null) {
+				System.err.println(this.pathFileProperties + " file not found");
+				System.exit(-1);
+			}
+			this.properties.load(inputStream);
+		} catch (IOException e ) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
